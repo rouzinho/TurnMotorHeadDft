@@ -44,8 +44,6 @@
 #include <cedar/auxiliaries/MatData.fwd.h>
 #include <cedar/auxiliaries/UIntParameter.h>
 #include <cedar/auxiliaries/DoubleParameter.h>
-#include <cedar/auxiliaries/StringParameter.h>
-#include <cedar/processing/sources/GaussInput.h>
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
 
@@ -72,7 +70,8 @@ public:
   //--------------------------------------------------------------------------------------------------------------------
 public slots:
   // none yet
-  void reCompute();
+  void setDirection();
+  void setVelocity();
   //--------------------------------------------------------------------------------------------------------------------
   // protected methods
   //--------------------------------------------------------------------------------------------------------------------
@@ -95,11 +94,14 @@ protected:
 private:
   //!@brief this is the output of the computation (in this case, the summed inputs
   cedar::aux::MatDataPtr mInput;
-  ros::NodeHandle n;
-  ros::Publisher pub;
-  std_msgs::Float64 motorPos;
-  double pos;
-  double old_pos;
+  cedar::aux::UIntParameterPtr mMotordir;
+  cedar::aux::DoubleParameterPtr mVel;
+  //ros::NodeHandle n;
+  //ros::Publisher pub;
+  //std_msgs::Float64 motorPos;
+  int choice;
+  double velocity;
+  double activated;
   //--------------------------------------------------------------------------------------------------------------------
   // parameters
   //--------------------------------------------------------------------------------------------------------------------

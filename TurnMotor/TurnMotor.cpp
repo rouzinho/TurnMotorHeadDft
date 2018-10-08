@@ -50,13 +50,16 @@
 //----------------------------------------------------------------------------------------------------------------------
 TurnMotor::TurnMotor()
 :
-cedar::proc::Step(true)
-//mOutput(new cedar::aux::MatData(cv::Mat::zeros(50, 50, CV_32F))),
-//mCenter(new cedar::aux::DoubleParameter(this,"Motor Pos",25))
+cedar::proc::Step(true),
+mMotordir(new cedar::aux::UIntParameter(this, "1 left, 2 right", 1, cedar::aux::UIntParameter::LimitType::positive(2))),
+mVel(new cedar::aux::DoubleParameter(this,"Motor Pos",25))
 {
 this->declareInput("motor", true);
-pub = n.advertise<std_msgs::Float64>("MotorCommand", 1000);
-//this->connect(this->mCenter.get(), SIGNAL(valueChanged()), this, SLOT(reCompute()));
+//pub = n.advertise<std_msgs::Float64>("MotorCommand", 1000);
+velocity = 0;
+choice = 1;
+this->connect(this->mMotordir.get(), SIGNAL(valueChanged()), this, SLOT(setDirection()));
+this->connect(this->mVel.get(), SIGNAL(valueChanged()), this, SLOT(setVelocity()));
 }
 //----------------------------------------------------------------------------------------------------------------------
 // methods
@@ -66,29 +69,33 @@ void TurnMotor::compute(const cedar::proc::Arguments&)
 
   cedar::aux::ConstDataPtr op1 = this->getInputSlot("motor")->getData();
   cv::Mat doublepos = op1->getData<cv::Mat>();
-
-  ros::Rate loop_rate(98);
   float t1 = doublepos.at<float>(0);
-  pos = static_cast<double> (t1);
-  if(std::abs(old_pos - pos) < 0.005)
+  activated = static_cast<double> (t1);
+  activated = round(activated);
+  if(activated == 1)
   {
-    pub.publish(motorPos);
-    loop_rate.sleep();
-    ros::spinOnce();
+     std::cout<<"activated\n";
+  }
+  else
+  {
+     std::cout<<"NOT activated\n";
   }
 
-  motorPos.data = pos;
-  old_pos = pos;
+
+
 
 }
 
-void TurnMotor::reCompute()
+void TurnMotor::setDirection()
 {
-  //pos = static_cast<double>(this->mCenter->getValue());
-  //mGaussMatrixCenters.clear();
-  //mGaussMatrixCenters.push_back(pos);
-  //this->mOutput->setData(cedar::aux::math::gaussMatrix(1,mGaussMatrixSizes,dat,mGaussMatrixSigmas,mGaussMatrixCenters,true));
+  choice = static_cast<int>(this->mMotordir->getValue());
 }
+
+void TurnMotor::setVelocity()
+{
+   velocity = static_cast<double>(this->mVel->getValue());
+}
+
 void TurnMotor::reset()
 {
 
