@@ -88,7 +88,7 @@ void TurnMotor::compute(const cedar::proc::Arguments&)
 
 void TurnMotor::setDirection()
 {
-  choice = static_cast<int>(this->mMotordir->getValue());
+   choice = static_cast<int>(this->mMotordir->getValue());
 }
 
 void TurnMotor::setVelocity()
